@@ -1,6 +1,7 @@
 PROJECT(metaSMT)
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.14.0)
 
+include(CMakePrintHelpers)
 option(metaSMT_REQUIRE_CXX11 "make C++11 a requirement" on)
 
 if ( NOT metaSMT_REQUIRE_CXX11 AND WIN32 )
@@ -28,6 +29,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules )
 set(Boost_NO_BOOST_CMAKE true)
 set(Boost_NO_SYSTEM_PATHS true)
 find_package(Boost REQUIRED)
+cmake_print_variables(Boost_VERSION)
 
 # From v1.57.0 Boost.Any does not require RTTI
 if (${Boost_VERSION} VERSION_LESS 105700)
@@ -38,7 +40,7 @@ else()
   set(metaSMT_REQUIRE_RTTI false)
 endif()
 
-set_package_info(Boost "Portable C++ libraries")
+set_package_properties(Boost PROPERTIES DESCRIPTION  "Portable C++ libraries")
 include_directories(${Boost_INCLUDE_DIRS})
 
 list(INSERT CMAKE_PREFIX_PATH 0 "${CMAKE_SOURCE_DIR}/cmake")
@@ -99,42 +101,42 @@ if(metaSMT_USE_Boolector)
 else()
   set(Boolector_FOUND 0)
 endif()
-set_package_info(Boolector "solver for SMT QF_BV and Arrays")
+set_package_properties(Boolector PROPERTIES DESCRIPTION  "solver for SMT QF_BV and Arrays")
 
 if (metaSMT_USE_Z3)
   find_package(Z3 QUIET)
 else()
   set(Z3_FOUND 0)
 endif()
-set_package_info(Z3 "solver for various SMT theories")
+set_package_properties(Z3 PROPERTIES DESCRIPTION  "solver for various SMT theories")
 
 if (metaSMT_USE_YICES2)
   find_package(YICES2 QUIET)
 else()
   set(YICES2_FOUND 0)
 endif()
-set_package_info(YICES2 "solver for various SMT theories")
+set_package_properties(YICES2 PROPERTIES DESCRIPTION  "solver for various SMT theories")
 
 if(metaSMT_USE_STP)
   find_package(STP QUIET)
 else()
   set(STP_FOUND 0)
 endif()
-set_package_info(STP "solver for SMT QF_BV and Arrays")
+set_package_properties(STP PROPERTIES DESCRIPTION  "solver for SMT QF_BV and Arrays")
 
 if(metaSMT_USE_CVC4)
   find_package(CVC4 QUIET)
 else()
   set(CVC4_FOUND 0)
 endif()
-set_package_info(CVC4 "solver for various SMT theories")
+set_package_properties(CVC4 PROPERTIES DESCRIPTION  "solver for various SMT theories")
 
 if (metaSMT_USE_CUDD)
   find_package(CUDD QUIET)
 else ()
   set(CUDD_FOUND 0)
 endif ()
-set_package_info(CUDD "binary decision diagrams")
+set_package_properties(CUDD PROPERTIES DESCRIPTION  "binary decision diagrams")
 
 if (metaSMT_USE_Aiger)
   find_package(Aiger QUIET) 
@@ -142,27 +144,27 @@ if (metaSMT_USE_Aiger)
 else ()
   set(Aiger_FOUND 0)
 endif()
-set_package_info(Aiger "And Inverter Graph libraries")
+set_package_properties(Aiger PROPERTIES DESCRIPTION  "And Inverter Graph libraries")
 
 if (metaSMT_USE_MiniSat)
   find_package(MiniSat QUIET)
 else ()
   set(MiniSat_FOUND 0)
 endif ()
-set_package_info(MiniSat "SAT solver MiniSAT")
+set_package_properties(MiniSat PROPERTIES DESCRIPTION  "SAT solver MiniSAT")
 
 if (metaSMT_USE_picosat )
   find_package (PicoSAT QUIET)
 endif()
-set_package_info(PicoSat "SAT solver PicoSat")
+set_package_properties(PicoSat PROPERTIES DESCRIPTION  "SAT solver PicoSat")
 
 if( metaSMT_USE_lingeling )
   find_package( Lingeling QUIET)
 endif()
-set_package_info(Lingeling "SAT solver lingeling")
+set_package_properties(Lingeling PROPERTIES DESCRIPTION  "SAT solver lingeling")
 
 find_package(GMP QUIET)
-set_package_info(GMP "optional, required by some backends")
+set_package_properties(GMP PROPERTIES DESCRIPTION  "optional, required by some backends")
 if(NOT GMP_FOUND)
   find_library(GMP_LIBRARIES gmp PATHS ${GMP_DIR})
   find_library(GMPXX_LIBRARIES gmpxx PATHS ${GMP_DIR})
@@ -213,16 +215,12 @@ int main(int argc, const char *argv[]) {
     message(WARNING "Disabling Z3 due to linking errors.")
     set( Z3_FOUND 0)
   endif()
-
-  check_CXX_source_compiles("#include <z3++.h>
-int main(int argc, const char *argv[]) {
-  z3::context c;
-  z3::expr e(c);
-  unsigned long long val = 0;
-  Z3_get_numeral_uint64(0, e, &val);
-  return 0;
-}"
-  Z3_ULL_API)
+ 
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    set(Z3_ULL_API OFF)
+  else()
+    set(Z3_ULL_API ON)
+  endif()
 
   if( Z3_ULL_API )
     set(Z3_CXXFLAGS "${Z3_CXXFLAGS} -DmetaSMT_Z3_ULL_API")
