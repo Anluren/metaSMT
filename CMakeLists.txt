@@ -59,7 +59,7 @@ include(cmake/config_file.cmake)
 # set all solvers to "on" with good support and experimental or
 # work in progress to "off"
 ###
-option(metaSMT_USE_Boolector  "try to use Boolector solver" on)
+option(metaSMT_USE_Boolector  "try to use Boolector solver" off)
 option(metaSMT_USE_Z3         "try to use Z3 solver" on)
 option(metaSMT_USE_STP        "try to use STP solver" on)
 option(metaSMT_USE_CVC4        "try to use CVC4 solver" on)

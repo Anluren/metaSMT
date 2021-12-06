@@ -32,6 +32,17 @@ clone the repository from https://github.com/agra-uni-bremen/dependencies.git
 or symlink to an existing dependencies folder. The folder name 'dependencies' is
 fixed and cannot be changed.
 
+Alternatively if only dependencies is installed and can be found with cmake find_package,
+no "dependencies" submodule is needed.<br/>
+Here is what I have done in my environment:<br/>
+. install Boost in different directory and set environment BOOST_ROOT to point it:<br/>
+  ```bash
+    export BOOST_ROOT=\<Boost installation directory\> <br/>
+  ```
+. install Z3 (up to version 4.8.7 verified), and install in default directory, or specified
+  directory. In later case, set Z3_DIR environmen to point to the installation direction
+  wit file Z3Config.cmake
+
 ## 1. The `bootstrap.sh` script
 
 The `bootstrap.sh` script provided by metaSMT can automatically download and
